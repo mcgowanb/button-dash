@@ -2,10 +2,10 @@
 #include<RF24.h>
 
 //ce. csn pins
-RF24 radio(9, 10);
+RF24 radio(7, 8);
 
 int buttonPin = 3;
-int ledPin = 2;
+int ledPin = 10;
 int x;
 
 void setup(void) {
@@ -28,7 +28,7 @@ void setup(void) {
 
 void loop() {
   radio.startListening();
-  Serial.println("Starting Loop, Radio on 1P.");
+  Serial.println("Starting Loop, Radio on 5P.");
   char receivedMessage[32] = {0};
   if (radio.available()) {
     radio.read(receivedMessage, sizeof(receivedMessage));
@@ -38,36 +38,38 @@ void loop() {
     radio.stopListening();
 
     String stringMessage(receivedMessage);
- 
-// Actual action if asked for button press
-    if (stringMessage == "1P") {
-      digitalWrite(ledPin,HIGH);
 
-      while (digitalRead(buttonPin) == HIGH){
-            }
-      digitalWrite(ledPin, LOW);      
+    // Actual action if asked for button press
+    if (stringMessage == "5P") {
+      digitalWrite(ledPin, HIGH);
+
+      while (digitalRead(buttonPin) == HIGH) {
+      }
+      digitalWrite(ledPin, LOW);
       Serial.println("looks like they want a string");
-      const char text[] = "Node 1P - Hello";
+      const char text[] = "Node 5P - Hello";
+      radio.write(text, sizeof(text));
+      delay(100);
       radio.write(text, sizeof(text));
       Serial.println("We sent our message: " + String(text));
     }
 
-// Test scenario    
+    // Test scenario
     if (stringMessage == "TEST") {
-      for(x=0; x < 5; x++){
-      digitalWrite(ledPin,HIGH); 
-      delay(500);
-      digitalWrite(ledPin, LOW);
-      delay(500);
+      for (x = 0; x < 5; x++) {
+        digitalWrite(ledPin, HIGH);
+        delay(500);
+        digitalWrite(ledPin, LOW);
+        delay(500);
       }
-      Serial.println("Test completed");
-      const char text[] = "Test done";
-      radio.write(text, sizeof(text));
-      Serial.println("We sent our message: " + String(text));
-    
+      //      Serial.println("Test completed");
+      //      const char text[] = "Test done";
+      //      radio.write(text, sizeof(text));
+      //      Serial.println("We sent our message: " + String(text));
+
     }
 
   }
 
-  delay(100);
+  //delay(5);
 }
